@@ -7,18 +7,29 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-public class DinamicaMolecularDeEsferasRigidas {
+public class ParticleContainer {
 
     private List<Particle> particles;
-    private Room room;
     private double executionTimeInSeconds;
     private Instant simulationStart;
+    private static final double SIDE=0.5;
+    private static ParticleContainer instance;
 
-    public DinamicaMolecularDeEsferasRigidas(List<Particle> particles, Room room,
-                                             double executionTimeInSeconds) {
+    public void init(List<Particle> particles,
+                              double executionTimeInSeconds) {
         this.particles = particles;
-        this.room = room;
         this.executionTimeInSeconds = executionTimeInSeconds;
+    }
+
+    protected ParticleContainer(){
+        //Singleton
+    }
+
+    public static ParticleContainer getInstance() {
+        if (instance==null){
+            instance = new ParticleContainer();
+        }
+        return instance;
     }
 
     public void calculate(Printer printer){

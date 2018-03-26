@@ -29,7 +29,8 @@ public class ParticleContainer {
     public void init(double executionTimeInSeconds, int amount, RandomDataGenerator rng) {
         this.executionTimeInSeconds = executionTimeInSeconds;
         this.rng=rng;
-        bigParticle = new Particle(BIG_MASS,BIG_RADIUS,generatePosition(BIG_RADIUS),
+        bigParticle = new Particle(BIG_MASS,BIG_RADIUS,
+                new Vector2D(rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS), rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS)),
                 new Vector2D(0, 0));
         for (int i=0;i<amount;i++){
             smallParticles.add(new Particle(SMALL_MASS,SMALL_RADIUS,generatePosition(SMALL_RADIUS),

@@ -100,8 +100,17 @@ public class ParticleImpl implements Particle {
 
     @Override
     public void bounce(Particle b) {
-        //TODO:Complete
+        ParticleImpl pb = (ParticleImpl) b;
+        Vector2D dv = new Vector2D(velocity.getX()-pb.velocity.getX(),velocity.getY()-pb.velocity.getY());
+        Vector2D dr = new Vector2D(position.getX()-pb.position.getX(),position.getY()-pb.position.getY());
+        double dvdr = dv.dotProduct(dr);
+        double j = (2*mass*pb.mass*dvdr)/((mass+pb.mass)*(radius+pb.radius));
+        double jx=j*dr.getX()/(radius+pb.radius);
+        double jy=j*dr.getY()/(radius+pb.radius);
+        velocity = new Vector2D(velocity.getX()-jx/mass,velocity.getY()-jy/mass);
+        pb.velocity=new Vector2D(pb.velocity.getX()+jx/mass,pb.velocity.getY()-jy/mass);
         collisionCount++;
+        pb.collisionCount++;
     }
 
     @Override

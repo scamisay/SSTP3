@@ -1,6 +1,6 @@
 package ar.edu.itba.ss;
 
-import ar.edu.itba.ss.domain.DinamicaMolecularDeEsferasRigidas.ParticleContainer;
+import ar.edu.itba.ss.domain.CollisionSystem;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
@@ -13,7 +13,7 @@ public class App {
         Scanner sc = new Scanner(System.in);
         System.out.println("N: ");
         int n = sc.nextInt();
-        ParticleContainer pc = ParticleContainer.getInstance();
+        CollisionSystem pc = CollisionSystem.getInstance();
         pc.init(30,100,new RandomDataGenerator(new JDKRandomGenerator(1000)));
         //pc.calculate();
 

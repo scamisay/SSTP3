@@ -1,6 +1,5 @@
-package ar.edu.itba.ss.domain.DinamicaMolecularDeEsferasRigidas;
+package ar.edu.itba.ss.domain;
 
-import ar.edu.itba.ss.domain.Particle;
 import ar.edu.itba.ss.domain.printers.Printer;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -10,7 +9,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParticleContainer {
+public class CollisionSystem {
 
     private List<Particle> smallParticles = new ArrayList<>();
     private Particle bigParticle;
@@ -24,16 +23,16 @@ public class ParticleContainer {
     private static final double SMALL_MASS = 0.1;
     private static final double MIN_SPEED=-0.1;
     private static final double MAX_SPEED=0.1;
-    private static ParticleContainer instance;
+    private static CollisionSystem instance;
 
     public void init(double executionTimeInSeconds, int amount, RandomDataGenerator rng) {
         this.executionTimeInSeconds = executionTimeInSeconds;
         this.rng=rng;
-        bigParticle = new Particle(BIG_MASS,BIG_RADIUS,
+        bigParticle = new ParticleImpl(BIG_MASS,BIG_RADIUS,
                 new Vector2D(rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS), rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS)),
                 new Vector2D(0, 0));
         for (int i=0;i<amount;i++){
-            smallParticles.add(new Particle(SMALL_MASS,SMALL_RADIUS,generatePosition(SMALL_RADIUS),
+            smallParticles.add(new ParticleImpl(SMALL_MASS,SMALL_RADIUS,generatePosition(SMALL_RADIUS),
                     new Vector2D(rng.nextUniform(MIN_SPEED,MAX_SPEED),rng.nextUniform(MIN_SPEED,MAX_SPEED))));
         }
     }
@@ -47,7 +46,7 @@ public class ParticleContainer {
             if (bigParticle.isSuperposed(position,radius))
                 isValid = false;
             else {
-                for (Particle p:smallParticles) {
+                for (Particle p: smallParticles) {
                     if (p.isSuperposed(position,radius))
                     {
                         isValid = false;
@@ -59,13 +58,13 @@ public class ParticleContainer {
         return position;
     }
 
-    protected ParticleContainer(){
+    protected CollisionSystem(){
         //Singleton
     }
 
-    public static ParticleContainer getInstance() {
+    public static CollisionSystem getInstance() {
         if (instance==null){
-            instance = new ParticleContainer();
+            instance = new CollisionSystem();
         }
         return instance;
     }

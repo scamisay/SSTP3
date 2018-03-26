@@ -1,4 +1,4 @@
-package ar.edu.itba.ss.domain.DinamicaMolecularDeEsferasRigidas;
+package ar.edu.itba.ss.domain;
 
 public interface Event extends Comparable<Event> {
     public double getTime();

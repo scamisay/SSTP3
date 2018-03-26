@@ -4,11 +4,17 @@ public class EventImpl implements Event {
     private Particle particle1;
     private Particle particle2;
     private double time;
+    private int collisionsP1 = 0;
+    private int collisionsP2 = 0;
 
 
     public EventImpl(Particle particle1, Particle particle2, double time) {
         this.particle1 = particle1;
         this.particle2 = particle2;
+        if (particle1 != null)
+            collisionsP1 = particle1.getCollisionCount();
+        if (particle2 != null)
+            collisionsP2 = particle2.getCollisionCount();
         this.time = time;
     }
 
@@ -29,11 +35,12 @@ public class EventImpl implements Event {
 
     @Override
     public boolean wasSuperveningEvent() {
-        return false;
+        return !((particle1 != null && particle1.getCollisionCount() != collisionsP1)
+               || (particle2 != null && particle2.getCollisionCount() != collisionsP2) );
     }
 
     @Override
     public int compareTo(Event o) {
-        return 0;
+        return Double.compare(time,o.getTime());
     }
 }

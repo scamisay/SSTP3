@@ -46,40 +46,61 @@ public class ParticleImpl implements Particle {
         position = position.add(time,velocity);
     }
 
+    @Override
     public boolean isSuperposed(Vector2D position, double radius) {
         return FastMath.hypot(position.getX()-this.position.getX(),position.getY()-this.position.getY()) <= radius + this.radius;
     }
 
     @Override
     public double collidesX() {
-        return 0;
+        if (velocity.getX()>0)
+            return (0.5 - radius - position.getX())/velocity.getX();
+        if (velocity.getX()<0)
+            return (radius - position.getX())/velocity.getX();
+        return -1;
     }
 
     @Override
     public double collidesY() {
-        return 0;
+        if (velocity.getY()>0)
+            return (0.5 - radius - position.getY())/velocity.getY();
+        if (velocity.getY()<0)
+            return (radius - position.getY())/velocity.getY();
+        return -1;
     }
 
     @Override
     public double collides(Particle b) {
-        return 0;
+        ParticleImpl pb = (ParticleImpl) b;
+        Vector2D dv = new Vector2D(velocity.getX()-pb.velocity.getX(),velocity.getY()-pb.velocity.getY());
+        Vector2D dr = new Vector2D(position.getX()-pb.position.getX(),position.getY()-pb.position.getY());
+        double dvdr = dv.dotProduct(dr);
+        if (dvdr>=0)
+            return -1;
+        double dvdv = dv.dotProduct(dv);
+        double drdr = dr.dotProduct(dr);
+        double sigma = radius+pb.radius;
+        double d = FastMath.pow(dvdr,2)-dvdv*(drdr-FastMath.pow(sigma,2));
+        if (d<0)
+            return -1;
+        return -(dvdr+FastMath.sqrt(d))/dvdv;
     }
 
     @Override
     public void bounceX() {
-
+        velocity = new Vector2D(-velocity.getX(),velocity.getY());
         collisionCount++;
     }
 
     @Override
     public void bounceY() {
-
+        velocity = new Vector2D(velocity.getX(),-velocity.getY());
         collisionCount++;
     }
 
     @Override
     public void bounce(Particle b) {
-
+        //TODO:Complete
         collisionCount++;
     }
 

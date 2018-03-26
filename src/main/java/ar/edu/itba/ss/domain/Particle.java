@@ -44,4 +44,8 @@ public class Particle {
     public void evolve (double time) {
         position = position.add(time,velocity);
     }
+
+    public boolean isSuperposed(Vector2D position, double radius) {
+        return FastMath.hypot(position.getX()-this.position.getX(),position.getY()-this.position.getY()) <= radius + this.radius;
+    }
 }

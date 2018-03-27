@@ -14,13 +14,15 @@ public class Printer {
     public void print(List<Particle> particles) {
         //System.out.println(particles.size());
         try {
-            Files.write(Paths.get("output.xyz"), (particles.size()+"\n").getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get("output.xyz"), ((particles.size()+2)+"\n").getBytes(), StandardOpenOption.APPEND);
             Files.write(Paths.get("output.xyz"), (++c+"\n").getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get("output.xyz"), ("0 0 0 0 0.1 0.001\n" +
+                    "0.5 0.5 0 0 0.1 0.001\n").getBytes(), StandardOpenOption.APPEND);
             for (Particle p:particles) {
                 Files.write(Paths.get("output.xyz"), (p+"\n").getBytes(), StandardOpenOption.APPEND);
             }
         } catch (Exception e){
-            System.out.println("Puto");
+            System.out.println("No escribo nada :D");
 
         }
 

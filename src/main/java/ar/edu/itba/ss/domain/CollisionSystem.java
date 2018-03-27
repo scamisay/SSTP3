@@ -84,9 +84,7 @@ public class CollisionSystem {
             if (!e.wasSuperveningEvent()) {
                 //System.out.println("False");
                 currentSimTime=e.getTime();
-                for (Particle p:particles){
-                    p.evolve(currentSimTime-lastSimTime);
-                }
+                evolveSystem(currentSimTime-lastSimTime);
                 if (e.getParticle1() == null) {
                     e.getParticle2().bounceY();
                     calculateWallCollisions(pq,e.getParticle2(),currentSimTime);
@@ -101,6 +99,7 @@ public class CollisionSystem {
                         if (p!=e.getParticle1())
                             calculateParticleCollisions(pq,p,e.getParticle1(),currentSimTime);
                     }
+
                 } else {
                     e.getParticle1().bounce(e.getParticle2());
 
@@ -111,10 +110,16 @@ public class CollisionSystem {
                             calculateParticleCollisions(pq, p, e.getParticle2(), currentSimTime);
                             calculateParticleCollisions(pq, p, e.getParticle1(), currentSimTime);
                         }
-                    }
+                    };
 
 
                 }
+
+                double totalEnergy=0;
+                for (Particle p:particles) {
+                    totalEnergy+=0.5*p.getMass()*(p.getVelocity().getNormSq());
+                }
+                System.out.println("Energy: "+totalEnergy);
                 printer.print(particles);
                 lastSimTime=currentSimTime;
             }
@@ -129,16 +134,15 @@ public class CollisionSystem {
             pq.add(new EventImpl(p1,p2,currentSimTime+c));
     }
 
+    private void evolveSystem(double time) {
+        for (Particle p:particles){
+            p.evolve(time);
+        }
+    }
+
     private void calculateWallCollisions(PriorityQueue<Event> pq, Particle p, double currentSimTime) {
         double cx = p.collidesX();
         double cy = p.collidesY();
-        if (particles.get(94)==p) {
-            System.out.println("--------");
-            System.out.println("CX: " + cx + " CY: " + cy);
-            System.out.println("VX: "+ p.getVelocity().getX() + " VY: "+p.getVelocity().getY());
-
-            System.out.println("RX: "+ p.getPosition().getX() + " RY: "+p.getPosition().getY());
-        }
 
         if (cx>=0)
             pq.add(new EventImpl(p,null,currentSimTime+cx));

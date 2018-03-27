@@ -14,4 +14,6 @@ public interface Particle {
     void evolve(double time);
     Vector2D getVelocity();
     Vector2D getPosition();
+    double getMass();
+    double getRadius();
 }

@@ -27,10 +27,12 @@ public class ParticleImpl implements Particle {
         this.velocity = velocity;
     }
 
+    @Override
     public double getMass() {
         return mass;
     }
 
+    @Override
     public double getRadius() {
         return radius;
     }
@@ -110,7 +112,7 @@ public class ParticleImpl implements Particle {
         double jx=j*dr.getX()/(radius+pb.radius);
         double jy=j*dr.getY()/(radius+pb.radius);
         velocity = new Vector2D(velocity.getX()-jx/mass,velocity.getY()-jy/mass);
-        pb.velocity=new Vector2D(pb.velocity.getX()+jx/mass,pb.velocity.getY()+jy/mass);
+        pb.velocity=new Vector2D(pb.velocity.getX()+jx/pb.mass,pb.velocity.getY()+jy/pb.mass);
         collisionCount++;
         pb.collisionCount++;
     }

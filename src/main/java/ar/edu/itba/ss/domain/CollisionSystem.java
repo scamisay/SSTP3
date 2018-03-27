@@ -68,6 +68,7 @@ public class CollisionSystem {
         simulationStart = Instant.now();
         PriorityQueue<Event> pq = new PriorityQueue<>();
         double currentSimTime = 0;
+        double lastSimTime=0;
         //System.out.println(particles.size());
         for (Particle p1: particles) {
             calculateWallCollisions(pq,p1,currentSimTime);
@@ -82,9 +83,9 @@ public class CollisionSystem {
             Event e = pq.remove();
             if (!e.wasSuperveningEvent()) {
                 //System.out.println("False");
-                currentSimTime+=e.getTime();
+                currentSimTime=e.getTime();
                 for (Particle p:particles){
-                    p.evolve(e.getTime());
+                    p.evolve(currentSimTime-lastSimTime);
                 }
                 if (e.getParticle1() == null) {
                     e.getParticle2().bounceY();
@@ -104,18 +105,18 @@ public class CollisionSystem {
                     e.getParticle1().bounce(e.getParticle2());
 
                     calculateWallCollisions(pq,e.getParticle2(),currentSimTime);
-                    for (Particle p:particles) {
-                        if (p!=e.getParticle2())
-                            calculateParticleCollisions(pq,p,e.getParticle2(),currentSimTime);
-                    }
-
                     calculateWallCollisions(pq,e.getParticle1(),currentSimTime);
                     for (Particle p:particles) {
-                        if (p!=e.getParticle1())
-                            calculateParticleCollisions(pq,p,e.getParticle1(),currentSimTime);
+                        if (p!=e.getParticle2() && p!=e.getParticle1()) {
+                            calculateParticleCollisions(pq, p, e.getParticle2(), currentSimTime);
+                            calculateParticleCollisions(pq, p, e.getParticle1(), currentSimTime);
+                        }
                     }
+
+
                 }
                 printer.print(particles);
+                lastSimTime=currentSimTime;
             }
 
         }
@@ -131,11 +132,18 @@ public class CollisionSystem {
     private void calculateWallCollisions(PriorityQueue<Event> pq, Particle p, double currentSimTime) {
         double cx = p.collidesX();
         double cy = p.collidesY();
-        //System.out.println("CX: "+cx +"CY: "+cy);
+        if (particles.get(94)==p) {
+            System.out.println("--------");
+            System.out.println("CX: " + cx + " CY: " + cy);
+            System.out.println("VX: "+ p.getVelocity().getX() + " VY: "+p.getVelocity().getY());
+
+            System.out.println("RX: "+ p.getPosition().getX() + " RY: "+p.getPosition().getY());
+        }
+
         if (cx>=0)
             pq.add(new EventImpl(p,null,currentSimTime+cx));
         if (cy>=0)
-            pq.add(new EventImpl(null,p,currentSimTime+cx));
+            pq.add(new EventImpl(null,p,currentSimTime+cy));
     }
 
     private boolean timeIsOver() {

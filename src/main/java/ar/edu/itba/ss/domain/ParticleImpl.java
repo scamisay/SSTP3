@@ -5,6 +5,7 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -109,7 +110,7 @@ public class ParticleImpl implements Particle {
         double jx=j*dr.getX()/(radius+pb.radius);
         double jy=j*dr.getY()/(radius+pb.radius);
         velocity = new Vector2D(velocity.getX()-jx/mass,velocity.getY()-jy/mass);
-        pb.velocity=new Vector2D(pb.velocity.getX()+jx/mass,pb.velocity.getY()-jy/mass);
+        pb.velocity=new Vector2D(pb.velocity.getX()+jx/mass,pb.velocity.getY()+jy/mass);
         collisionCount++;
         pb.collisionCount++;
     }
@@ -121,8 +122,9 @@ public class ParticleImpl implements Particle {
 
     @Override
     public String toString() {
-        return position.getX()+ " " + position.getY() + " "
-                + velocity.getX() + " " + velocity.getY() + " "
+        DecimalFormat df = new DecimalFormat("###.000000");
+        return df.format(position.getX())+ " " + df.format(position.getY()) + " "
+                + df.format(velocity.getX()) + " " + df.format(velocity.getY()) + " "
                 + mass + " "
                 + radius;
     }

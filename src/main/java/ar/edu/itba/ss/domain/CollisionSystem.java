@@ -23,6 +23,7 @@ public class CollisionSystem {
     private static final double SMALL_MASS = 0.1;
     private static final double MIN_SPEED = -0.1;
     private static final double MAX_SPEED = 0.1;
+    private static final double DT2 = 0.005;
     private static CollisionSystem instance;
 
     public void init(double executionTimeInSeconds, int amount, RandomDataGenerator rng) {
@@ -82,9 +83,15 @@ public class CollisionSystem {
             //System.out.println(pq.size());
             Event e = pq.remove();
             if (!e.wasSuperveningEvent()) {
-                //System.out.println("False");
                 currentSimTime=e.getTime();
-                evolveSystem(currentSimTime-lastSimTime);
+                //System.out.println(currentSimTime-lastSimTime);
+                double lastT=lastSimTime;
+                for (double t = lastSimTime+DT2;t<=currentSimTime;t+=DT2) {
+                    evolveSystem(t-lastT);
+                    printer.print(particles);
+                    lastT=t;
+                }
+                //evolveSystem(currentSimTime-lastSimTime);
                 if (e.getParticle1() == null) {
                     e.getParticle2().bounceY();
                     calculateWallCollisions(pq,e.getParticle2(),currentSimTime);
@@ -114,13 +121,7 @@ public class CollisionSystem {
 
 
                 }
-
-                double totalEnergy=0;
-                for (Particle p:particles) {
-                    totalEnergy+=0.5*p.getMass()*(p.getVelocity().getNormSq());
-                }
-                System.out.println("Energy: "+totalEnergy);
-                printer.print(particles);
+                //printer.print(particles);
                 lastSimTime=currentSimTime;
             }
 
@@ -138,6 +139,7 @@ public class CollisionSystem {
         for (Particle p:particles){
             p.evolve(time);
         }
+
     }
 
     private void calculateWallCollisions(PriorityQueue<Event> pq, Particle p, double currentSimTime) {

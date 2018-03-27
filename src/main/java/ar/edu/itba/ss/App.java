@@ -15,7 +15,7 @@ public class App {
         System.out.println("N: ");
         int n = sc.nextInt();
         CollisionSystem pc = CollisionSystem.getInstance();
-        pc.init(15,n,new RandomDataGenerator(new JDKRandomGenerator(1000)));
+        pc.init(300,n,new RandomDataGenerator(new JDKRandomGenerator(1000)));
         pc.calculate(new Printer());
 
 

@@ -124,7 +124,7 @@ public class ParticleImpl implements Particle {
 
     @Override
     public String toString() {
-        DecimalFormat df = new DecimalFormat("###.000000");
+        DecimalFormat df = new DecimalFormat("###.0000000000");
         return df.format(position.getX())+ " " + df.format(position.getY()) + " "
                 + df.format(velocity.getX()) + " " + df.format(velocity.getY()) + " "
                 + mass + " "

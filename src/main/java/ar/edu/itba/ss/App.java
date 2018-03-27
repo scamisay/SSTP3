@@ -14,8 +14,10 @@ public class App {
         Scanner sc = new Scanner(System.in);
         System.out.println("N: ");
         int n = sc.nextInt();
+        System.out.println("DT2: ");
+        double dt2 = sc.nextDouble();
         CollisionSystem pc = CollisionSystem.getInstance();
-        pc.init(300,n,new RandomDataGenerator(new JDKRandomGenerator(1000)));
+        pc.init(300,n,dt2,new RandomDataGenerator(new JDKRandomGenerator(1000)));
         pc.calculate(new Printer());
 
 

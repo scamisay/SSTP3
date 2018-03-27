@@ -23,12 +23,14 @@ public class CollisionSystem {
     private static final double SMALL_MASS = 0.1;
     private static final double MIN_SPEED = -0.1;
     private static final double MAX_SPEED = 0.1;
-    private static final double DT2 = 0.005;
+    private double dt2;
     private static CollisionSystem instance;
+    private double lastDuration = 0.0;
 
-    public void init(double executionTimeInSeconds, int amount, RandomDataGenerator rng) {
+    public void init(double executionTimeInSeconds, int amount, double dt2, RandomDataGenerator rng) {
         this.executionTimeInSeconds = executionTimeInSeconds;
         this.rng = rng;
+        this.dt2=dt2;
         particles.add(new ParticleImpl(BIG_MASS, BIG_RADIUS,
                 new Vector2D(rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS), rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS)),
                 new Vector2D(0, 0)));
@@ -84,11 +86,13 @@ public class CollisionSystem {
             Event e = pq.remove();
             if (!e.wasSuperveningEvent()) {
                 currentSimTime=e.getTime();
-                //System.out.println(currentSimTime-lastSimTime);
+                //System.out.println("Total: " + (currentSimTime-lastSimTime));
                 double lastT=lastSimTime;
-                for (double t = lastSimTime+DT2;t<=currentSimTime;t+=DT2) {
+                for (double t = lastSimTime;t<currentSimTime;t+=dt2) {
+                    //System.out.println("Partial: "+(t-lastT));
                     evolveSystem(t-lastT);
                     printer.print(particles);
+                    //System.out.println("Imprimo");
                     lastT=t;
                 }
                 //evolveSystem(currentSimTime-lastSimTime);
@@ -121,7 +125,7 @@ public class CollisionSystem {
 
 
                 }
-                //printer.print(particles);
+                printer.print(particles);
                 lastSimTime=currentSimTime;
             }
 
@@ -153,6 +157,11 @@ public class CollisionSystem {
     }
 
     private boolean timeIsOver() {
-        return Duration.between(simulationStart, Instant.now()).getSeconds() > executionTimeInSeconds;
+        double duration = Duration.between(simulationStart, Instant.now()).getSeconds();
+        if (duration >lastDuration) {
+            System.out.println("Time: "+duration);
+            lastDuration = duration;
+        }
+        return duration > executionTimeInSeconds;
     }
 }

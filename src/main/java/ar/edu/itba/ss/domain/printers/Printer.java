@@ -29,4 +29,12 @@ public class Printer {
 
 
     }
+
+    public Printer() {
+        try {
+            Files.write(Paths.get("output.xyz"), "".getBytes());
+        } catch (Exception e) {
+            System.out.println("No escribo nada :D");
+        }
+    }
 }

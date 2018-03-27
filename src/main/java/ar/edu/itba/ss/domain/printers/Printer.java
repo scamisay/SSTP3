@@ -1,6 +1,19 @@
 package ar.edu.itba.ss.domain.printers;
 
-public interface Printer {
+import ar.edu.itba.ss.domain.Particle;
 
-    void print();
+import java.util.List;
+
+public class Printer {
+
+    private int c = 0;
+    public void print(List<Particle> particles) {
+        System.out.println(particles.size());
+        System.out.println(++c);
+        for (Particle p:particles) {
+            System.out.println(p);
+        }
+
+
+    }
 }

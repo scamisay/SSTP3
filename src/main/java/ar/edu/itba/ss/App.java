@@ -1,6 +1,7 @@
 package ar.edu.itba.ss;
 
 import ar.edu.itba.ss.domain.CollisionSystem;
+import ar.edu.itba.ss.domain.printers.Printer;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
@@ -14,8 +15,8 @@ public class App {
         System.out.println("N: ");
         int n = sc.nextInt();
         CollisionSystem pc = CollisionSystem.getInstance();
-        pc.init(30,100,new RandomDataGenerator(new JDKRandomGenerator(1000)));
-        //pc.calculate();
+        pc.init(30,n,new RandomDataGenerator(new JDKRandomGenerator(1000)));
+        pc.calculate(new Printer());
 
 
 

@@ -11,4 +11,5 @@ public interface Particle {
     void bounce(Particle b);
     int getCollisionCount();
     boolean isSuperposed(Vector2D position, double radius);
+    void evolve(double time);
 }

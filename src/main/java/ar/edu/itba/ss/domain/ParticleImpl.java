@@ -16,7 +16,7 @@ public class ParticleImpl implements Particle {
     private final double radius;
     private Vector2D position;
     private Vector2D velocity;
-    private int collisionCount;
+    private int collisionCount = 0;
 
 
     public ParticleImpl(double mass, double radius, Vector2D position, Vector2D velocity) {
@@ -42,6 +42,7 @@ public class ParticleImpl implements Particle {
         return velocity;
     }
 
+    @Override
     public void evolve (double time) {
         position = position.add(time,velocity);
     }
@@ -116,5 +117,13 @@ public class ParticleImpl implements Particle {
     @Override
     public int getCollisionCount() {
         return collisionCount;
+    }
+
+    @Override
+    public String toString() {
+        return position.getX()+ " " + position.getY() + " "
+                + velocity.getX() + " " + velocity.getY() + " "
+                + mass + " "
+                + radius;
     }
 }

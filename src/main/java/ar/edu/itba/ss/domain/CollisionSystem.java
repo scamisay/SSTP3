@@ -68,27 +68,74 @@ public class CollisionSystem {
         simulationStart = Instant.now();
         PriorityQueue<Event> pq = new PriorityQueue<>();
         double currentSimTime = 0;
-        for (Particle p: particles) {
-            calculateWallCollisions(pq,p,currentSimTime);
-            for (Particle pp:particles){
-                calculateParticleCollisions(pq,p,pp,currentSimTime);
+        //System.out.println(particles.size());
+        for (Particle p1: particles) {
+            calculateWallCollisions(pq,p1,currentSimTime);
+            for (Particle p2:particles){
+                if (p2!=p1)
+                    calculateParticleCollisions(pq,p1,p2,currentSimTime);
             }
         }
-        while (!timeIsOver()) {
 
+        while (!timeIsOver()) {
+            //System.out.println(pq.size());
+            Event e = pq.remove();
+            if (!e.wasSuperveningEvent()) {
+                //System.out.println("False");
+                currentSimTime+=e.getTime();
+                for (Particle p:particles){
+                    p.evolve(e.getTime());
+                }
+                if (e.getParticle1() == null) {
+                    e.getParticle2().bounceY();
+                    calculateWallCollisions(pq,e.getParticle2(),currentSimTime);
+                    for (Particle p:particles) {
+                        if (p!=e.getParticle2())
+                            calculateParticleCollisions(pq,p,e.getParticle2(),currentSimTime);
+                    }
+                } else if (e.getParticle2() == null) {
+                    e.getParticle1().bounceX();
+                    calculateWallCollisions(pq,e.getParticle1(),currentSimTime);
+                    for (Particle p:particles) {
+                        if (p!=e.getParticle1())
+                            calculateParticleCollisions(pq,p,e.getParticle1(),currentSimTime);
+                    }
+                } else {
+                    e.getParticle1().bounce(e.getParticle2());
+
+                    calculateWallCollisions(pq,e.getParticle2(),currentSimTime);
+                    for (Particle p:particles) {
+                        if (p!=e.getParticle2())
+                            calculateParticleCollisions(pq,p,e.getParticle2(),currentSimTime);
+                    }
+
+                    calculateWallCollisions(pq,e.getParticle1(),currentSimTime);
+                    for (Particle p:particles) {
+                        if (p!=e.getParticle1())
+                            calculateParticleCollisions(pq,p,e.getParticle1(),currentSimTime);
+                    }
+                }
+                printer.print(particles);
+            }
 
         }
         System.out.println("Simulacion terminada");
     }
 
-    private void calculateParticleCollisions(PriorityQueue<Event> pq, Particle p, Particle pp, double currentSimTime) {
-        //TODO:Complete
-        return;
+    private void calculateParticleCollisions(PriorityQueue<Event> pq, Particle p1, Particle p2, double currentSimTime) {
+        double c = p1.collides(p2);
+        if (c>=0)
+            pq.add(new EventImpl(p1,p2,currentSimTime+c));
     }
 
     private void calculateWallCollisions(PriorityQueue<Event> pq, Particle p, double currentSimTime) {
-        //TODO:Complete
-        return;
+        double cx = p.collidesX();
+        double cy = p.collidesY();
+        //System.out.println("CX: "+cx +"CY: "+cy);
+        if (cx>=0)
+            pq.add(new EventImpl(p,null,currentSimTime+cx));
+        if (cy>=0)
+            pq.add(new EventImpl(null,p,currentSimTime+cx));
     }
 
     private boolean timeIsOver() {

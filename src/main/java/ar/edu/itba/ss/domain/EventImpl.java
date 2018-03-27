@@ -1,8 +1,8 @@
 package ar.edu.itba.ss.domain;
 
 public class EventImpl implements Event {
-    private Particle particle1;
-    private Particle particle2;
+    private Particle particle1; //If null -> Horizontal wall collision
+    private Particle particle2; //If null -> Vertical wall collision
     private double time;
     private int collisionsP1 = 0;
     private int collisionsP2 = 0;
@@ -35,8 +35,11 @@ public class EventImpl implements Event {
 
     @Override
     public boolean wasSuperveningEvent() {
-        return !((particle1 != null && particle1.getCollisionCount() != collisionsP1)
-               || (particle2 != null && particle2.getCollisionCount() != collisionsP2) );
+        if (particle1==null)
+            return particle2.getCollisionCount()!=collisionsP2;
+        if (particle2==null)
+            return particle1.getCollisionCount()!=collisionsP1;
+        return particle2.getCollisionCount()!=collisionsP2 || particle1.getCollisionCount()!=collisionsP1;
     }
 
     @Override

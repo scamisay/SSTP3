@@ -16,4 +16,5 @@ public interface Particle {
     Vector2D getPosition();
     double getMass();
     double getRadius();
+    double getKineticEnergy();
 }

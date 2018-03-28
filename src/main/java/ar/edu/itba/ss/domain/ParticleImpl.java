@@ -33,6 +33,11 @@ public class ParticleImpl implements Particle {
     }
 
     @Override
+    public double getKineticEnergy(){
+        return 0.5*mass*velocity.getNormSq();
+    }
+
+    @Override
     public double getRadius() {
         return radius;
     }
@@ -127,7 +132,7 @@ public class ParticleImpl implements Particle {
         DecimalFormat df = new DecimalFormat("###.0000000000");
         return df.format(position.getX())+ " " + df.format(position.getY()) + " "
                 + df.format(velocity.getX()) + " " + df.format(velocity.getY()) + " "
-                + df.format(velocity.getNorm())+ " "
+                + df.format(getKineticEnergy())+ " "
                 + mass + " "
                 + radius;
     }

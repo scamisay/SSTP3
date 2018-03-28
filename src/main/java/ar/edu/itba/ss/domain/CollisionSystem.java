@@ -3,6 +3,7 @@ package ar.edu.itba.ss.domain;
 import ar.edu.itba.ss.domain.printers.Printer;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.util.FastMath;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -13,8 +14,6 @@ import java.util.PriorityQueue;
 public class CollisionSystem {
 
     private List<Particle> particles = new ArrayList<>();
-    private double executionTimeInSeconds;
-    private Instant simulationStart;
     private RandomDataGenerator rng;
     private static final double SIDE = 0.5;
     private static final double BIG_RADIUS = 0.05;
@@ -25,10 +24,10 @@ public class CollisionSystem {
     private static final double MAX_SPEED = 0.1;
     private double dt2;
     private static CollisionSystem instance;
-    private double lastDuration = 0.0;
+    private double simTime;
 
-    public void init(double executionTimeInSeconds, int amount, double dt2, RandomDataGenerator rng) {
-        this.executionTimeInSeconds = executionTimeInSeconds;
+    public void init(double simTime, int amount, double dt2, RandomDataGenerator rng) {
+        this.simTime = simTime;
         this.rng = rng;
         this.dt2=dt2;
         particles.add(new ParticleImpl(BIG_MASS, BIG_RADIUS,
@@ -68,7 +67,6 @@ public class CollisionSystem {
     }
 
     public void calculate(Printer printer) {
-        simulationStart = Instant.now();
         PriorityQueue<Event> pq = new PriorityQueue<>();
         double currentSimTime = 0;
         double lastSimTime=0;
@@ -81,21 +79,19 @@ public class CollisionSystem {
             }
         }
 
-        while (!timeIsOver()) {
+        while (!timeIsOver(currentSimTime)) {
             //System.out.println(pq.size());
             Event e = pq.remove();
             if (!e.wasSuperveningEvent()) {
                 currentSimTime=e.getTime();
                 //System.out.println("Total: " + (currentSimTime-lastSimTime));
-                double lastT=lastSimTime;
-                for (double t = lastSimTime;t<currentSimTime;t+=dt2) {
-                    //System.out.println("Partial: "+(t-lastT));
-                    evolveSystem(t-lastT);
+
+                for (int i = 0; i< FastMath.floor((currentSimTime-lastSimTime)/dt2); i++){
+                    evolveSystem(dt2);
                     printer.print(particles);
-                    //System.out.println("Imprimo");
-                    lastT=t;
                 }
                 //evolveSystem(currentSimTime-lastSimTime);
+                //printer.print(particles);
                 if (e.getParticle1() == null) {
                     e.getParticle2().bounceY();
                     calculateWallCollisions(pq,e.getParticle2(),currentSimTime);
@@ -125,7 +121,6 @@ public class CollisionSystem {
 
 
                 }
-                printer.print(particles);
                 lastSimTime=currentSimTime;
             }
 
@@ -156,12 +151,8 @@ public class CollisionSystem {
             pq.add(new EventImpl(null,p,currentSimTime+cy));
     }
 
-    private boolean timeIsOver() {
-        double duration = Duration.between(simulationStart, Instant.now()).getSeconds();
-        if (duration >lastDuration) {
-            System.out.println("Time: "+duration);
-            lastDuration = duration;
-        }
-        return duration > executionTimeInSeconds;
+    private boolean timeIsOver(double currentSimTime) {
+        System.out.println("Sim Time: "+currentSimTime);
+        return currentSimTime>simTime;
     }
 }

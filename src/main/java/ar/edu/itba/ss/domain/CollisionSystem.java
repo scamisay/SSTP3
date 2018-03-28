@@ -85,11 +85,12 @@ public class CollisionSystem {
             if (!e.wasSuperveningEvent()) {
                 currentSimTime=e.getTime();
                 //System.out.println("Total: " + (currentSimTime-lastSimTime));
-
-                for (int i = 0; i< FastMath.floor((currentSimTime-lastSimTime)/dt2); i++){
+                int n;
+                for (n=1;n*dt2<(currentSimTime-lastSimTime);n++){
                     evolveSystem(dt2);
                     printer.print(particles);
                 }
+                evolveSystem((currentSimTime-lastSimTime)-(n-1)*dt2);
                 //evolveSystem(currentSimTime-lastSimTime);
                 //printer.print(particles);
                 if (e.getParticle1() == null) {
@@ -121,7 +122,16 @@ public class CollisionSystem {
 
 
                 }
+                //System.out.printf("Time since last crash: %.0f"+(currentSimTime-lastSimTime));
                 lastSimTime=currentSimTime;
+                //double totalEnergy = 0;
+                /*for (Particle p:particles){
+                    totalEnergy+= 0.5*p.getMass()*p.getVelocity().getNormSq();
+                }*/
+                //System.out.println("Energy: "+totalEnergy);
+
+                System.out.println("Sim Time: "+currentSimTime);
+
             }
 
         }
@@ -152,7 +162,6 @@ public class CollisionSystem {
     }
 
     private boolean timeIsOver(double currentSimTime) {
-        System.out.println("Sim Time: "+currentSimTime);
         return currentSimTime>simTime;
     }
 }

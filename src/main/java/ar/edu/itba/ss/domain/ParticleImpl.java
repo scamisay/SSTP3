@@ -127,6 +127,7 @@ public class ParticleImpl implements Particle {
         DecimalFormat df = new DecimalFormat("###.0000000000");
         return df.format(position.getX())+ " " + df.format(position.getY()) + " "
                 + df.format(velocity.getX()) + " " + df.format(velocity.getY()) + " "
+                + df.format(velocity.getNorm())+ " "
                 + mass + " "
                 + radius;
     }

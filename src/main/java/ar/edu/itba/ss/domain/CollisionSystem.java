@@ -29,7 +29,7 @@ public class CollisionSystem {
     public void init(double simTime, int amount, double dt2, RandomDataGenerator rng) {
         this.simTime = simTime;
         this.rng = rng;
-        this.dt2=dt2;
+        this.dt2=1.0/60;
         particles.add(new ParticleImpl(BIG_MASS, BIG_RADIUS,
                 new Vector2D(rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS), rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS)),
                 new Vector2D(0, 0)));
@@ -136,6 +136,8 @@ public class CollisionSystem {
 
         }
         System.out.println("Simulacion terminada");
+        System.out.println("DT2: "+dt2);
+        System.out.println("N: "+particles.size());
     }
 
     private void calculateParticleCollisions(PriorityQueue<Event> pq, Particle p1, Particle p2, double currentSimTime) {

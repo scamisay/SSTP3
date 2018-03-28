@@ -26,10 +26,10 @@ public class CollisionSystem {
     private static CollisionSystem instance;
     private double simTime;
 
-    public void init(double simTime, int amount, double dt2, RandomDataGenerator rng) {
+    public void init(double simTime, int amount,double dt2, RandomDataGenerator rng) {
         this.simTime = simTime;
         this.rng = rng;
-        this.dt2=1.0/60;
+        this.dt2=dt2;
         particles.add(new ParticleImpl(BIG_MASS, BIG_RADIUS,
                 new Vector2D(rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS), rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS)),
                 new Vector2D(0, 0)));

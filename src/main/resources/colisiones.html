@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Colisiones</title>
+</head>
+<body>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="height: 800px; margin: auto; min-width: 510px; max-width: 800px"></div>
+
+<script>
+
+    Highcharts.chart('container', {
+        chart: {
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Histograma de Cantidad de Colisiones'
+        },
+        xAxis: [{
+            categories: ["[0.000,4.286)", "[4.286,8.571)", "[8.571,12.857)", "[12.857,17.143)", "[17.143,21.429)", "[21.429,25.714)", "[25.714,30.000)"]
+        }],
+        yAxis: [{ // Primary yAxis
+            title: {
+                text: 'Colisiones',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            labels: {
+                format: '{value}',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            }
+
+        }, { // Secondary yAxis
+
+        }],
+
+        tooltip: {
+            shared: true
+        },
+
+        series: [{
+            name: 'Promedio Colisiones',
+            type: 'column',
+            yAxis: 1,
+            data: [151.1, 150.2, 145.1, 150.4, 149.7, 158.3, 150.9],
+            tooltip: {
+                pointFormat: '<span style="font-weight: bold; color: {series.color}">{series.name}</span>: <b>{point.y:.1f} </b> '
+            }
+        }, {
+            name: 'Rainfall error',
+            type: 'errorbar',
+            yAxis: 1,
+            data: [[130,176], [122,173], [131,171], [131,172], [135,172], [119,191], [126,184]],
+            tooltip: {
+                pointFormat: '(error range: {point.low}-{point.high} )<br/>'
+            }
+        }, ]
+    });
+</script>
+</body>
+</html>

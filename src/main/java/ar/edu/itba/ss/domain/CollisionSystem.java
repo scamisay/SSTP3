@@ -1,6 +1,9 @@
 package ar.edu.itba.ss.domain;
 
 import ar.edu.itba.ss.domain.printers.Printer;
+import ar.edu.itba.ss.helper.CollisionCounter;
+import ar.edu.itba.ss.helper.Histogram;
+import ar.edu.itba.ss.helper.Range;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.util.FastMath;
@@ -9,6 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 public class CollisionSystem {
@@ -25,11 +29,14 @@ public class CollisionSystem {
     private double dt2;
     private static CollisionSystem instance;
     private double simTime;
+    private CollisionCounter collisionCounter;
+    private boolean countCollisions;
 
-    public void init(double simTime, int amount,double dt2, RandomDataGenerator rng) {
+    public void init(double simTime, int amount,double dt2, RandomDataGenerator rng, boolean countCollisions) {
         this.simTime = simTime;
         this.rng = rng;
         this.dt2=dt2;
+        particles = new ArrayList<>();
         particles.add(new ParticleImpl(BIG_MASS, BIG_RADIUS,
                 new Vector2D(rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS), rng.nextUniform(BIG_RADIUS, SIDE - BIG_RADIUS)),
                 new Vector2D(0, 0)));
@@ -37,6 +44,7 @@ public class CollisionSystem {
             particles.add(new ParticleImpl(SMALL_MASS, SMALL_RADIUS, generatePosition(SMALL_RADIUS),
                     new Vector2D(rng.nextUniform(MIN_SPEED, MAX_SPEED), rng.nextUniform(MIN_SPEED, MAX_SPEED))));
         }
+        this.countCollisions = countCollisions;
     }
 
     private Vector2D generatePosition(double radius) {
@@ -79,6 +87,10 @@ public class CollisionSystem {
             }
         }
 
+        if(countCollisions){
+            collisionCounter = new CollisionCounter(simTime);
+        }
+
         while (!timeIsOver(currentSimTime)) {
             //System.out.println(pq.size());
             Event e = pq.remove();
@@ -87,14 +99,23 @@ public class CollisionSystem {
                 //System.out.println("Total: " + (currentSimTime-lastSimTime));
                 int n;
                 for (n=1;n*dt2<(currentSimTime-lastSimTime);n++){
+                    //TODO: ver, deberia decir evolveSystem(n*dt2); ?
                     evolveSystem(dt2);
-                    printer.print(particles);
+
+                    //en caso de varias corridas para construccion de instagramas es util no imprimir
+                    if(printer!= null){
+                        printer.print(particles);
+                    }
                 }
                 evolveSystem((currentSimTime-lastSimTime)-(n-1)*dt2);
                 //evolveSystem(currentSimTime-lastSimTime);
                 //printer.print(particles);
                 if (e.getParticle1() == null) {
                     e.getParticle2().bounceY();
+
+                    //cuento una colision
+                    addCollision(currentSimTime,1);
+
                     calculateWallCollisions(pq,e.getParticle2(),currentSimTime);
                     for (Particle p:particles) {
                         if (p!=e.getParticle2())
@@ -102,6 +123,10 @@ public class CollisionSystem {
                     }
                 } else if (e.getParticle2() == null) {
                     e.getParticle1().bounceX();
+
+                    //cuento una colision
+                    addCollision(currentSimTime,1);
+
                     calculateWallCollisions(pq,e.getParticle1(),currentSimTime);
                     for (Particle p:particles) {
                         if (p!=e.getParticle1())
@@ -110,6 +135,9 @@ public class CollisionSystem {
 
                 } else {
                     e.getParticle1().bounce(e.getParticle2());
+
+                    //cuento dos colisiones
+                    addCollision(currentSimTime,2);
 
                     calculateWallCollisions(pq,e.getParticle2(),currentSimTime);
                     calculateWallCollisions(pq,e.getParticle1(),currentSimTime);
@@ -135,9 +163,16 @@ public class CollisionSystem {
             }
 
         }
+
         System.out.println("Simulacion terminada");
         System.out.println("DT2: "+dt2);
         System.out.println("N: "+particles.size());
+    }
+
+    private void addCollision(double currentSimTime, int quantity) {
+        if(collisionCounter != null){
+            collisionCounter.addCollision(currentSimTime,quantity);
+        }
     }
 
     private void calculateParticleCollisions(PriorityQueue<Event> pq, Particle p1, Particle p2, double currentSimTime) {
@@ -165,5 +200,9 @@ public class CollisionSystem {
 
     private boolean timeIsOver(double currentSimTime) {
         return currentSimTime>simTime;
+    }
+
+    public Histogram<Range,Integer> buildCollisionHistogram() {
+        return collisionCounter.buildHistogram();
     }
 }

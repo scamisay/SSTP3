@@ -50,6 +50,6 @@ public class Range implements Comparable<Range>{
 
     @Override
     public int compareTo(Range o) {
-        return new Double(min).compareTo(o.getMin());
+        return Double.compare(min,o.getMin());
     }
 }

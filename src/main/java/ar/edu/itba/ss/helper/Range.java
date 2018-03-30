@@ -1,5 +1,8 @@
 package ar.edu.itba.ss.helper;
 
+
+
+//TODO: Que dijimos de usar decimales para el equals?? :)
 public class Range implements Comparable<Range>{
     private double min;
     private double max;

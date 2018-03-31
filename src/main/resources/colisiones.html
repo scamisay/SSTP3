@@ -18,12 +18,25 @@
             zoomType: 'xy'
         },
         title: {
-            text: 'Histograma de Cantidad de Colisiones'
+            text: 'Colisiones: cantidad vs probabilidad'
         },
         xAxis: [{
             categories: ["[0.000,4.286)", "[4.286,8.571)", "[8.571,12.857)", "[12.857,17.143)", "[17.143,21.429)", "[21.429,25.714)", "[25.714,30.000)"]
         }],
-        yAxis: [{ // Primary yAxis
+        yAxis: [{
+            labels: {
+                format: '{value}',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            title: {
+                text: 'Probabilidad',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            }
+        },{
             title: {
                 text: 'Colisiones',
                 style: {
@@ -35,10 +48,8 @@
                 style: {
                     color: Highcharts.getOptions().colors[0]
                 }
-            }
-
-        }, { // Secondary yAxis
-
+            },
+            opposite: true
         }],
 
         tooltip: {
@@ -61,7 +72,22 @@
             tooltip: {
                 pointFormat: '(error range: {point.low}-{point.high} )<br/>'
             }
-        }, ]
+        },
+            {
+                name: 'Probabilidad',
+                type: 'spline',
+                data: [0.14303541701948008, 0.1424517586879129, 0.1375357655875618, 0.14273426075284945, 0.14172827085675022, 0.14975395278517814, 0.14276057431026745],
+                tooltip: {
+                    pointFormat: '<span style="font-weight: bold; color: {series.color}">{series.name}</span>: <b>{point.y:.4f}</b> '
+                }
+            }, {
+                name: 'error de probabilidad',
+                type: 'errorbar',
+                data: [[0.12730627306273062,0.15575221238938053], [0.11674641148325358,0.169], [0.12718446601941746,0.1684729064039409], [0.11592920353982301,0.16310679611650486], [0.13237924865831843,0.1524271844660194], [0.11724137931034483,0.17894736842105263], [0.11485870556061988,0.16974169741697417]],
+                tooltip: {
+                    pointFormat: '(error range: {point.low:.4f}-{point.high:.4f})<br/>'
+                }
+            }]
     });
 </script>
 </body>

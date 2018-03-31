@@ -4,15 +4,12 @@ import ar.edu.itba.ss.domain.printers.Printer;
 import ar.edu.itba.ss.helper.CollisionCounter;
 import ar.edu.itba.ss.helper.Histogram;
 import ar.edu.itba.ss.helper.Range;
+import ar.edu.itba.ss.helper.RmsVelocityManager;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.commons.math3.util.FastMath;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 
 public class CollisionSystem {
@@ -30,9 +27,22 @@ public class CollisionSystem {
     private static CollisionSystem instance;
     private double simTime;
     private CollisionCounter collisionCounter;
+    private RmsVelocityManager rmsVelocityManager;
     private boolean countCollisions;
+    private double startCalculatingRmsFrom = -1;//por defecto no la calcula nunca
 
-    public void init(double simTime, int amount,double dt2, RandomDataGenerator rng, boolean countCollisions) {
+    /***
+     * estas variables se calculan al principio de la simulacion y se mantienen constantes
+     */
+    private double temperature;
+    private double totalSystemMass;
+
+    // Boltzmann constant (J/K)
+    private static final double BOLTZMANN_CONSTANT = 1.380_648_52e-23;
+    //(kg·m2/sec2)/K·mol
+    private static final double IDEAL_GAS_CONSTANT = 8.314_5;
+
+    public void init(double simTime, int amount,double dt2, RandomDataGenerator rng) {
         this.simTime = simTime;
         this.rng = rng;
         this.dt2=dt2;
@@ -44,8 +54,47 @@ public class CollisionSystem {
             particles.add(new ParticleImpl(SMALL_MASS, SMALL_RADIUS, generatePosition(SMALL_RADIUS),
                     new Vector2D(rng.nextUniform(MIN_SPEED, MAX_SPEED), rng.nextUniform(MIN_SPEED, MAX_SPEED))));
         }
-        this.countCollisions = countCollisions;
+
+        rmsVelocityManager = new RmsVelocityManager();
+
+        temperature = calculateTemperature();
+        totalSystemMass = calculateTotalSystemMass();
     }
+
+    private double calculateTotalSystemMass() {
+        return particles.stream().mapToDouble(Particle::getMass).sum();
+    }
+
+    public double getTemperature() {
+        return temperature;
+    }
+
+    private double calculateTemperature() {
+        double sum = particles.stream()
+                .map( p -> p.getMass() * p.getVelocity().getNormSq())
+                .mapToDouble(Double::doubleValue)
+                .sum();
+        return sum/particles.size()/(2*BOLTZMANN_CONSTANT);
+    }
+
+
+    /**
+     * METODOS PARA CONTROL DEL A SIMULACION - COMIENZO
+     */
+
+    public void setCountCollisions() {
+        this.countCollisions = true;
+    }
+
+    public void setStartCalculatingRmsFrom(double startCalculatingRmsFrom) {
+        this.startCalculatingRmsFrom = startCalculatingRmsFrom;
+    }
+
+    /**
+     * METODOS PARA CONTROL DEL A SIMULACION - FIN
+     */
+
+
 
     private Vector2D generatePosition(double radius) {
         boolean isValid;
@@ -99,12 +148,17 @@ public class CollisionSystem {
                 //System.out.println("Total: " + (currentSimTime-lastSimTime));
                 int n;
                 for (n=1;n*dt2<(currentSimTime-lastSimTime);n++){
-                    //TODO: ver, deberia decir evolveSystem(n*dt2); ?
                     evolveSystem(dt2);
 
                     //en caso de varias corridas para construccion de instagramas es util no imprimir
                     if(printer!= null){
                         printer.print(particles);
+                    }
+
+                    double currentAbsoluteTime = lastSimTime + n*dt2;
+                    if(startCalculatingRmsFrom != -1 && startCalculatingRmsFrom < currentAbsoluteTime){
+                        //calculo RMS velocity
+                        addRMSVelocity(currentAbsoluteTime, calculateRmsVelocity());
                     }
                 }
                 evolveSystem((currentSimTime-lastSimTime)-(n-1)*dt2);
@@ -169,6 +223,15 @@ public class CollisionSystem {
         System.out.println("N: "+particles.size());
     }
 
+    private void addRMSVelocity(double time, double rmsVelocity) {
+        rmsVelocityManager.add(time,rmsVelocity);
+    }
+
+    private double calculateRmsVelocity() {
+        return Math.sqrt(3*IDEAL_GAS_CONSTANT*getTemperature()/totalSystemMass);
+    }
+
+
     private void addCollision(double currentSimTime, int quantity) {
         if(collisionCounter != null){
             collisionCounter.addCollision(currentSimTime,quantity);
@@ -204,5 +267,9 @@ public class CollisionSystem {
 
     public Histogram<Range,Integer> buildCollisionHistogram() {
         return collisionCounter.buildHistogram();
+    }
+
+    public Histogram<Range, Double> buildRmsVelocityHistogram(int bucketQuantity) {
+        return rmsVelocityManager.buildHistogram(bucketQuantity);
     }
 }

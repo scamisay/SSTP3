@@ -19,8 +19,7 @@ public class App {
         System.out.println("DT2: ");
         double dt2 = sc.nextDouble();
         CollisionSystem pc = CollisionSystem.getInstance();
-        boolean countCollisions = true;
-        pc.init(time,n,dt2,new RandomDataGenerator(new JDKRandomGenerator(1000)), countCollisions);
+        pc.init(time,n,dt2,new RandomDataGenerator(new JDKRandomGenerator(1000)));
         pc.calculate(new Printer());
 
 

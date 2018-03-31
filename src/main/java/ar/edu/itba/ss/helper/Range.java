@@ -1,11 +1,13 @@
 package ar.edu.itba.ss.helper;
 
 
+import org.apache.commons.math3.util.Precision;
 
-//TODO: Que dijimos de usar decimales para el equals?? :)
 public class Range implements Comparable<Range>{
     private double min;
     private double max;
+
+    private final double EPSILON = Math.pow(10, -8);
 
     public Range(double min, double max) {
         this.min = min;
@@ -18,7 +20,7 @@ public class Range implements Comparable<Range>{
     }
 
     public boolean isIn(double time) {
-        return time >= min && time < max;
+        return Precision.compareTo(time,min,EPSILON) >= 0 && time < max;
     }
 
     public double getMin() {
@@ -36,8 +38,9 @@ public class Range implements Comparable<Range>{
 
         Range range = (Range) o;
 
-        if (Double.compare(range.min, min) != 0) return false;
-        return Double.compare(range.max, max) == 0;
+
+        if (Precision.compareTo(range.min, min, EPSILON) != 0) return false;
+        return Precision.compareTo(range.max, max, EPSILON) == 0;
     }
 
     @Override

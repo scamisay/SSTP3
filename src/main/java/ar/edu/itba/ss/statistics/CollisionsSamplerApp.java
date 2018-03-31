@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Created by scamisay on 30/03/18.
  */
-public class CollisionsApp {
+public class CollisionsSamplerApp {
 
     static final int SAMPLES = 10;
 
@@ -26,13 +26,15 @@ public class CollisionsApp {
         int n = 50;
         double dt2 = .02;
 
-        boolean countCollisions = true;
 
         Map<Range, List<Integer>> histCollector = new HashMap<>();
+        Map<Range, List<Double>> histProbCollector = new HashMap<>();
         for(int i=0; i< SAMPLES; i++){
             CollisionSystem pc = CollisionSystem.getInstance();
-            pc.init(time,n,dt2,new RandomDataGenerator(new JDKRandomGenerator(i)), countCollisions);
+            pc.init(time,n,dt2,new RandomDataGenerator(new JDKRandomGenerator(i)));
+            pc.setCountCollisions();
             pc.calculate(null);
+
             Histogram<Range,Integer> hist = pc.buildCollisionHistogram();
             for(Range range: hist.rangeList()){
                 Integer value = hist.getValue(range);
@@ -40,6 +42,12 @@ public class CollisionsApp {
                     histCollector.put(range, new ArrayList<>());
                 }
                 histCollector.get(range).add(value);
+
+                double prob = hist.getProbability(range);
+                if(!histProbCollector.keySet().contains(range)){
+                    histProbCollector.put(range, new ArrayList<>());
+                }
+                histProbCollector.get(range).add(prob);
             }
         }
 
@@ -49,14 +57,35 @@ public class CollisionsApp {
             Integer min = histCollector.get(range).stream().mapToInt(Integer::intValue).min().getAsInt();
             Integer max = histCollector.get(range).stream().mapToInt(Integer::intValue).max().getAsInt();
             Double average = histCollector.get(range).stream().mapToInt(Integer::intValue).average().getAsDouble();
-            histWithErrors.put(range, new HistError<Integer>(min, average, max));
+            histWithErrors.put(range, new HistError<>(min, average, max));
         }
         HistogramWithErrors<Range, Integer> histogramWithErrors = new HistogramWithErrors<>(histWithErrors);
+
+        Map<Range, HistError<Double>> histsProbsWithErrors = new HashMap<>();
+        for(Range range : histProbCollector.keySet()){
+            double minProb = histProbCollector.get(range).stream().mapToDouble(Double::doubleValue).min().getAsDouble();
+            double maxProb = histProbCollector.get(range).stream().mapToDouble(Double::doubleValue).max().getAsDouble();
+            double averageProb = histProbCollector.get(range).stream().mapToDouble(Double::doubleValue).average().getAsDouble();
+            histsProbsWithErrors.put(range, new HistError<>(minProb, averageProb, maxProb));
+        }
+        HistogramWithErrors<Range, Double> histogramProbWithErrors = new HistogramWithErrors<>(histsProbsWithErrors);
+
         String rangesJson = histogramWithErrors.rangeList().stream().map(a ->"\""+a.toString()+"\"").collect(Collectors.joining(", "));
+
+
+        //valores para graficar
+
         String heights = histogramWithErrors.averageValues().stream().map(a ->a.toString()).collect(Collectors.joining(", "));
         String errors =  histogramWithErrors.errorList().stream()
                 .map(e ->"["+e.getMin()+","+e.getMax()+"]")
                 .collect(Collectors.joining(", "));
+
+
+        String probabilities = histogramProbWithErrors.averageValues().stream().map(a ->a.toString()).collect(Collectors.joining(", "));
+        String probabilitiesErrors =  histogramProbWithErrors.errorList().stream()
+                .map(e ->"["+e.getMin()+","+e.getMax()+"]")
+                .collect(Collectors.joining(", "));
+
         System.out.print(rangesJson);
     }
 

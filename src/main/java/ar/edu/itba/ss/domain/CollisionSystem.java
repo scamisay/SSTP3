@@ -8,6 +8,7 @@ import ar.edu.itba.ss.helper.RmsVelocityManager;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
+import javax.swing.text.Position;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ public class CollisionSystem {
     private double startCalculatingRmsFrom = -1;//por defecto no la calcula nunca
     private List<Double> speedsToCalculate;
     private Map<Double, List<Double>> speedsByTime;
+    private boolean followBigBall;
 
     /***
      * estas variables se calculan al principio de la simulacion y se mantienen constantes
@@ -57,6 +59,7 @@ public class CollisionSystem {
         }
 
         rmsVelocityManager = new RmsVelocityManager();
+        speedsToCalculate = new LinkedList<>();
 
         temperature = calculateTemperature();
         totalSystemMass = calculateTotalSystemMass();
@@ -165,6 +168,10 @@ public class CollisionSystem {
                         }
                     }
 
+                    if(followBigBall){
+                        trackBigBallIfMoved();
+                    }
+
                     /*if(startCalculatingRmsFrom != -1 && startCalculatingRmsFrom < currentAbsoluteTime){
                         //calculo RMS velocity
                         addRMSVelocity(currentAbsoluteTime, calculateRmsVelocity());
@@ -230,6 +237,25 @@ public class CollisionSystem {
         System.out.println("Simulacion terminada");
         System.out.println("DT2: "+dt2);
         System.out.println("N: "+particles.size());
+        System.out.println("Temperatura: "+temperature);
+    }
+
+    public int getParticleQuantity(){
+        return particles.size();
+    }
+
+    private List<Vector2D> bigBallTrajectory;
+    private void trackBigBallIfMoved() {
+        Particle bigBall = particles.get(0);
+        Vector2D newPostion = bigBall.getPosition();
+        if(bigBallTrajectory.isEmpty()){
+            bigBallTrajectory.add(newPostion);
+        }else{
+            Vector2D lastPosition = bigBallTrajectory.stream().reduce((first, second) -> second).get();
+            if(!lastPosition.equals(newPostion) && lastPosition.distance(newPostion) > SIDE*.01){
+                bigBallTrajectory.add(newPostion);
+            }
+        }
     }
 
     private void calculateSpeed(double time) {
@@ -299,5 +325,14 @@ public class CollisionSystem {
 
     public Map<Double, List<Double>> getSpeedsByTime() {
         return speedsByTime;
+    }
+
+    public void activateTrajectoryTrackerForBigBall() {
+        followBigBall = true;
+        bigBallTrajectory = new LinkedList<>();
+    }
+
+    public List<Vector2D> getBigBallTrajectory() {
+        return bigBallTrajectory;
     }
 }

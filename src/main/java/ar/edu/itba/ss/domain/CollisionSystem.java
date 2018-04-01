@@ -8,9 +8,8 @@ import ar.edu.itba.ss.helper.RmsVelocityManager;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CollisionSystem {
 
@@ -22,7 +21,7 @@ public class CollisionSystem {
     private static final double BIG_MASS = 100;
     private static final double SMALL_MASS = 0.1;
     private static final double MIN_SPEED = -0.1;
-    private static final double MAX_SPEED = 0.1;
+    public static final double MAX_SPEED = 0.1;
     private double dt2;
     private static CollisionSystem instance;
     private double simTime;
@@ -30,6 +29,8 @@ public class CollisionSystem {
     private RmsVelocityManager rmsVelocityManager;
     private boolean countCollisions;
     private double startCalculatingRmsFrom = -1;//por defecto no la calcula nunca
+    private List<Double> speedsToCalculate;
+    private Map<Double, List<Double>> speedsByTime;
 
     /***
      * estas variables se calculan al principio de la simulacion y se mantienen constantes
@@ -156,10 +157,18 @@ public class CollisionSystem {
                     }
 
                     double currentAbsoluteTime = lastSimTime + n*dt2;
-                    if(startCalculatingRmsFrom != -1 && startCalculatingRmsFrom < currentAbsoluteTime){
+                    if(!speedsToCalculate.isEmpty()){
+                        double startCalculatingSpeed = speedsToCalculate.get(0);
+                        if(startCalculatingSpeed < currentAbsoluteTime){
+                            calculateSpeed(startCalculatingSpeed);
+                            speedsToCalculate.remove(0);
+                        }
+                    }
+
+                    /*if(startCalculatingRmsFrom != -1 && startCalculatingRmsFrom < currentAbsoluteTime){
                         //calculo RMS velocity
                         addRMSVelocity(currentAbsoluteTime, calculateRmsVelocity());
-                    }
+                    }*/
                 }
                 evolveSystem((currentSimTime-lastSimTime)-(n-1)*dt2);
                 //evolveSystem(currentSimTime-lastSimTime);
@@ -223,6 +232,14 @@ public class CollisionSystem {
         System.out.println("N: "+particles.size());
     }
 
+    private void calculateSpeed(double time) {
+        speedsByTime.put(time, calculateSystemSpeeds());
+    }
+
+    private List<Double> calculateSystemSpeeds() {
+        return particles.stream().map( p -> p.getVelocity().getNorm()).collect(Collectors.toList());
+    }
+
     private void addRMSVelocity(double time, double rmsVelocity) {
         rmsVelocityManager.add(time,rmsVelocity);
     }
@@ -271,5 +288,16 @@ public class CollisionSystem {
 
     public Histogram<Range, Double> buildRmsVelocityHistogram(int bucketQuantity) {
         return rmsVelocityManager.buildHistogram(bucketQuantity);
+    }
+
+    public void setSpeedSnapshots(List<Double> snapshots) {
+        speedsToCalculate = new LinkedList<>(snapshots);
+        Collections.sort(speedsToCalculate);
+
+        speedsByTime = new HashMap<>(); //aca guardo las rapideces por tiempo
+    }
+
+    public Map<Double, List<Double>> getSpeedsByTime() {
+        return speedsByTime;
     }
 }

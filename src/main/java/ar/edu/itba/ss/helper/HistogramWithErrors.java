@@ -30,4 +30,8 @@ public class HistogramWithErrors<X,Y> {
         return rangeList().stream().map( k -> values.get(k)).collect(Collectors.toList());
     }
 
+
+    public Map<X, HistError<Y>> getMap() {
+        return values;
+    }
 }

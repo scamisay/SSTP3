@@ -42,6 +42,9 @@ public class MeanSquaredDisplacementInTime {
         HistogramWithErrors<Double,Double> bigBallH = manager.buildHistogramWithErrorsForBigBall();
         HistogramWithErrors<Double,Double> smallBallH = manager.buildHistogramWithErrorsForSmallBall();
 
+        /***
+         * msd graph
+         */
         String rangesJson = bigBallH.rangeList().stream().map(a ->"\""+a.toString()+"\"").collect(Collectors.joining(", "));
 
         String msdForBB = bigBallH.averageValues().stream().map(a ->a.toString()).collect(Collectors.joining(", "));
@@ -54,6 +57,22 @@ public class MeanSquaredDisplacementInTime {
                 .map(e ->"["+e.getMin()+","+e.getMax()+"]")
                 .collect(Collectors.joining(", "));
 
+
+        /***
+         * Coeficiente de Difusion
+         */
+        HistogramWithErrors<Double,Double> bigBallCdH = manager.buildHistogramCdWithErrorsForBigBall();
+        HistogramWithErrors<Double,Double> smallBallCdH = manager.buildHistogramCdWithErrorsForSmallBall();
+
+        String cdForBB = bigBallCdH.averageValues().stream().map(a ->a.toString()).collect(Collectors.joining(", "));
+        String cdErrorsForBB =  bigBallCdH.errorList().stream()
+                .map(e ->"["+e.getMin()+","+e.getMax()+"]")
+                .collect(Collectors.joining(", "));
+
+        String cdForSB = smallBallCdH.averageValues().stream().map(a ->a.toString()).collect(Collectors.joining(", "));
+        String cdErrorsForSB =  smallBallCdH.errorList().stream()
+                .map(e ->"["+e.getMin()+","+e.getMax()+"]")
+                .collect(Collectors.joining(", "));
         int a= 3;
     }
 }

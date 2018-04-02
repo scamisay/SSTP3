@@ -78,4 +78,24 @@ public class MeanSquaredDisplacementManager {
         }
         return new HistogramWithErrors<>(mapHist);
     }
+
+    public HistogramWithErrors<Double, Double> buildHistogramCdWithErrorsForBigBall() {
+        return buildHistogramForDiffusionCoeficient(buildHistogramWithErrorsForBigBall());
+    }
+
+    private HistogramWithErrors<Double, Double> buildHistogramForDiffusionCoeficient(HistogramWithErrors<Double, Double> msdHist) {
+        Map<Double, HistError<Double>> mapHist = new HashMap<>();
+        for(Double time : msdHist.getMap().keySet()){
+            HistError<Double> histError = msdHist.getMap().get(time);
+            double min = histError.getMin()/time;
+            double max = histError.getMax()/time;
+            double average = histError.getAverage()/time;
+            mapHist.put(time, new HistError<>(min, average, max));
+        }
+        return new HistogramWithErrors<>(mapHist);
+    }
+
+    public HistogramWithErrors<Double, Double> buildHistogramCdWithErrorsForSmallBall() {
+        return buildHistogramForDiffusionCoeficient(buildHistogramWithErrorsForSmallBall());
+    }
 }

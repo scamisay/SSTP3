@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Colisiones</title>
+    <title>Trayectoria de la bola grande</title>
 </head>
 <body>
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -24,11 +24,17 @@
         title: {
             text: 'Trayectoria de la bola grande'
         },
+        subtitle: {
+            text: 'duracion de la simulaciones=300s. T = 1/N sum(mv^2) / (d k)'
+        },
         xAxis: {
             reversed: false,
             title: {
                 enabled: true,
-                text: 'x'
+                text: 'x',
+                style: {
+                    fontSize:'25px'
+                }
             },
             labels: {
                 format: '{value}'
@@ -38,7 +44,10 @@
         },
         yAxis: {
             title: {
-                text: 'y'
+                text: 'Y',
+                style: {
+                    fontSize:'25px'
+                }
             },
             labels: {
                 format: '{value}'

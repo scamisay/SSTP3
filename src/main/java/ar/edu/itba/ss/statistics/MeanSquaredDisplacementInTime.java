@@ -25,7 +25,6 @@ public class MeanSquaredDisplacementInTime {
         int time = 30;
         int n = 100;
         double dt2 = .02;
-        int bucketQuantity = 9;
 
         List<Double> timeList = IntStream.range(1, 11).boxed().map( i -> i*.09*time ).collect(Collectors.toList());
 

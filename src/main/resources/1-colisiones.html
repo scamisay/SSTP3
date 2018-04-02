@@ -20,9 +20,19 @@
         title: {
             text: 'Colisiones: cantidad vs probabilidad'
         },
-        xAxis: [{
-            categories: ["[0.000,4.286)", "[4.286,8.571)", "[8.571,12.857)", "[12.857,17.143)", "[17.143,21.429)", "[21.429,25.714)", "[25.714,30.000)"]
-        }],
+        subtitle: {
+            text: 'N=51, simulaciones por punto=10'
+        },
+        xAxis: {
+            categories: [
+                "[0.000,4.286)", "[4.286,8.571)", "[8.571,12.857)", "[12.857,17.143)", "[17.143,21.429)", "[21.429,25.714)", "[25.714,30.000)"
+            ],title: {
+                text: 'Tiempo (segundos)',
+                style: {
+                    fontSize:'25px'
+                }
+            }
+        },
         yAxis: [{
             labels: {
                 format: '{value}',
@@ -33,14 +43,16 @@
             title: {
                 text: 'Probabilidad',
                 style: {
-                    color: Highcharts.getOptions().colors[1]
+                    color: Highcharts.getOptions().colors[1],
+                    fontSize:'25px'
                 }
             }
         },{
             title: {
                 text: 'Colisiones',
                 style: {
-                    color: Highcharts.getOptions().colors[0]
+                    color: Highcharts.getOptions().colors[0],
+                    fontSize:'25px'
                 }
             },
             labels: {

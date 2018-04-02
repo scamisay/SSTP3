@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Colisiones</title>
+</head>
+<body>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="height: 800px; margin: auto; min-width: 510px; max-width: 800px"></div>
+
+<script>
+
+
+    Highcharts.chart('container', {
+        chart: {
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'desplazamiento cuadrático medio en función del tiempo'
+        },
+        xAxis: {
+            categories: [
+                "2.6999999999999997", "5.3999999999999995", "8.100000000000001", "10.799999999999999", "13.499999999999998", "16.200000000000003", "18.9", "21.599999999999998", "24.299999999999997", "26.999999999999996"
+            ],title: {
+                text: 'Tiempo (segundos)',
+                style: {
+                    fontSize:'25px'
+                }
+            },labels: {
+                format: '{value:.2f}'
+            }
+        },
+        yAxis: [{ // Primary yAxis
+            labels: {
+                format: '{value}',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            title: {
+                text: 'Desplazamiento Cuadrático Medio',
+                style: {
+                    fontSize:'25px'
+                }
+            }
+        }, { // Secondary yAxis
+            title: {
+                text: '',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            labels: {
+                format: '{value} ',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            opposite: true
+        }],
+
+        tooltip: {
+            shared: true
+        },
+
+        series: [
+        {
+            name: 'particula grande',
+            type: 'spline',
+            data: [
+                1.3357969201398075E-5, 5.084323259479798E-5, 1.0843559854907745E-4, 1.8208508020987576E-4, 2.6792581370944127E-4, 3.6249264002409797E-4, 4.677731936964088E-4, 5.856453414049015E-4, 7.195810182568746E-4, 8.694199177329862E-4
+            ],
+            tooltip: {
+                pointFormat: '<span style="font-weight: bold; color: {series.color}">{series.name}</span>: <b>{point.y:.4f}</b> '
+            }
+        }, {
+            name: 'error de probabilidad',
+            type: 'errorbar',
+            data: [
+                [1.4731426660802296E-6,4.669132209332486E-5], [4.9673660900605575E-6,1.7053116160014708E-4], [9.553207017959241E-6,3.5242563367589584E-4], [1.3080390210484139E-5,5.753867231236657E-4], [1.5777728623377384E-5,8.277928086819663E-4], [1.6606943424742845E-5,0.0010924621265738965], [1.5379358865946836E-5,0.0013942350738110054], [1.2362599161314389E-5,0.0017652328921622586], [8.615635006956614E-6,0.0022283717675384536], [6.671910414378752E-6,0.0028313230565836507]
+            ],
+            tooltip: {
+                pointFormat: '(error range: {point.low:.4f}-{point.high:.4f})<br/>'
+            }
+        },{
+                name: 'particula pequeña',
+                type: 'spline',
+                data: [
+                    0.020074386885722544, 0.036276123080343496, 0.051492584968429164, 0.0636586566242306, 0.06896100922304169, 0.07869162133032036, 0.08390850247827723, 0.07927256761308783, 0.07487323412221507, 0.08424435140231525
+                ],
+                tooltip: {
+                    pointFormat: '<span style="font-weight: bold; color: {series.color}">{series.name}</span>: <b>{point.y:.4f}</b> '
+                }
+            }, {
+                name: 'error de probabilidad',
+                type: 'errorbar',
+                data: [
+                    [0.008236747599875817,0.033316823919201835], [0.01446681562216532,0.06706207502173005], [0.02354970864227404,0.10949736901471621], [0.025671296730463308,0.14724343752251287], [0.01252185286188344,0.15627182407627654], [0.021501327952794098,0.1603592725131101], [0.011358744567746966,0.14316431592784415], [0.00785998493615806,0.16348540480932205], [0.025301998571229528,0.16096174054921258], [0.011037835364318807,0.21139479946277637]
+                ],
+                tooltip: {
+                    pointFormat: '(error range: {point.low:.4f}-{point.high:.4f})<br/>'
+                }
+            }
+        ]
+    });
+</script>
+</body>
+</html>

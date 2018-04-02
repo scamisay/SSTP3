@@ -8,7 +8,6 @@ import ar.edu.itba.ss.helper.RmsVelocityManager;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
-import javax.swing.text.Position;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,10 @@ public class CollisionSystem {
     private boolean countCollisions;
     private double startCalculatingRmsFrom = -1;//por defecto no la calcula nunca
     private List<Double> speedsToCalculate;
+    private List<Double> trackingByTimeList;
     private Map<Double, List<Double>> speedsByTime;
+    private List<Vector2D> bigBallTracker;
+    private List<Vector2D> smallBallTracker;
     private boolean followBigBall;
 
     /***
@@ -165,6 +167,15 @@ public class CollisionSystem {
                         if(startCalculatingSpeed < currentAbsoluteTime){
                             calculateSpeed(startCalculatingSpeed);
                             speedsToCalculate.remove(0);
+                        }
+                    }
+
+                    if(!trackingByTimeList.isEmpty()){
+                        double trackingByTime = trackingByTimeList.get(0);
+                        if(trackingByTime < currentAbsoluteTime){
+                            bigBallTracker.add(particles.get(0).getPosition());
+                            smallBallTracker.add(particles.get(1).getPosition());
+                            trackingByTimeList.remove(0);
                         }
                     }
 
@@ -323,6 +334,16 @@ public class CollisionSystem {
         speedsByTime = new HashMap<>(); //aca guardo las rapideces por tiempo
     }
 
+    public void setTrackingByTimeList(List<Double> trackingByTimeList) {
+        this.trackingByTimeList = new LinkedList<>(trackingByTimeList);
+        Collections.sort(this.trackingByTimeList);
+
+        bigBallTracker = new ArrayList<>();
+        bigBallTracker.add(particles.get(0).getPosition());
+        smallBallTracker = new ArrayList<>();
+        smallBallTracker.add(particles.get(1).getPosition());
+    }
+
     public Map<Double, List<Double>> getSpeedsByTime() {
         return speedsByTime;
     }
@@ -334,5 +355,13 @@ public class CollisionSystem {
 
     public List<Vector2D> getBigBallTrajectory() {
         return bigBallTrajectory;
+    }
+
+    public List<Vector2D> getBigBallTracker() {
+        return bigBallTracker;
+    }
+
+    public List<Vector2D> getSmallBallTracker() {
+        return smallBallTracker;
     }
 }

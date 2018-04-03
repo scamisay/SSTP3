@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Desplazamiento Cuadrático Medio en función del tiempo</title>
+</head>
+<body>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="height: 800px; margin: auto; min-width: 510px; max-width: 800px"></div>
+
+<script>
+
+
+    Highcharts.chart('container', {
+        chart: {
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Desplazamiento Cuadrático Medio para dos Particulas Grandes con distintos N'
+        },
+        subtitle: {
+            text: 'simulaciones por punto=10'
+        },
+        xAxis: {
+            categories: [
+                "2.6999999999999997", "5.3999999999999995", "8.100000000000001", "10.799999999999999", "13.499999999999998", "16.200000000000003", "18.9", "21.599999999999998", "24.299999999999997", "26.999999999999996"
+            ],title: {
+                text: 'Tiempo (segundos)',
+                style: {
+                    fontSize:'25px'
+                }
+            },labels: {
+                format: '{value:.2f}'
+            }
+        },
+        yAxis: [{ // Primary yAxis
+            labels: {
+                format: '{value}',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            title: {
+                text: 'Desplazamiento Cuadrático Medio',
+                style: {
+                    fontSize:'25px'
+                }
+            }
+        }, { // Secondary yAxis
+            title: {
+                text: '',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            labels: {
+                format: '{value} ',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            opposite: true
+        }],
+
+        tooltip: {
+            shared: true
+        },
+
+        series: [
+        {
+            name: 'particula grande, N=401',
+            type: 'spline',
+            data: [
+                1.3981147789126644E-5, 5.243917689173649E-5, 1.1061012373512989E-4, 1.7967655636910943E-4, 2.54459219290429E-4, 3.328846896183751E-4, 4.127691231617927E-4, 4.912520275298866E-4, 5.558454861432368E-4, 6.173324222152031E-4
+            ],
+            tooltip: {
+                pointFormat: '<span style="font-weight: bold; color: {series.color}">{series.name}</span>: <b>{point.y:.4f}</b> '
+            }
+        }, {
+            name: 'error de probabilidad',
+            type: 'errorbar',
+            data: [
+                [3.371606115030555E-6,3.101516467691252E-5], [8.81700115849949E-6,1.2610740143172237E-4], [1.2519450459479528E-5,2.8912543982577773E-4], [1.1855030373411439E-5,5.07207290029688E-4], [1.2768626271682051E-5,7.764960536106647E-4], [1.5913608126282504E-5,0.00106597179871756], [1.3751719296791798E-5,0.0013622513842396953], [1.3940815349652226E-5,0.0016640586145196864], [1.957803036045092E-5,0.0018930267932746644], [3.398654469430547E-5,0.0020629462544960496]
+            ],
+            tooltip: {
+                pointFormat: '(error range: {point.low:.4f}-{point.high:.4f})<br/>'
+            }
+        },{
+                name: 'particula grande, N=101',
+                type: 'spline',
+                data: [
+                    1.3357969201398075E-5, 5.084323259479798E-5, 1.0843559854907745E-4, 1.8208508020987576E-4, 2.6792581370944127E-4, 3.6249264002409797E-4, 4.677731936964088E-4, 5.856453414049015E-4, 7.195810182568746E-4, 8.694199177329862E-4
+                ],
+                tooltip: {
+                    pointFormat: '<span style="font-weight: bold; color: {series.color}">{series.name}</span>: <b>{point.y:.4f}</b> '
+                }
+            }, {
+                name: 'error de probabilidad',
+                type: 'errorbar',
+                data: [
+                    [1.4731426660802296E-6,4.669132209332486E-5], [4.9673660900605575E-6,1.7053116160014708E-4], [9.553207017959241E-6,3.5242563367589584E-4], [1.3080390210484139E-5,5.753867231236657E-4], [1.5777728623377384E-5,8.277928086819663E-4], [1.6606943424742845E-5,0.0010924621265738965], [1.5379358865946836E-5,0.0013942350738110054], [1.2362599161314389E-5,0.0017652328921622586], [8.615635006956614E-6,0.0022283717675384536], [6.671910414378752E-6,0.0028313230565836507]
+                ],
+                tooltip: {
+                    pointFormat: '(error range: {point.low:.4f}-{point.high:.4f})<br/>'
+                }
+            }
+        ]
+    });
+</script>
+</body>
+</html>

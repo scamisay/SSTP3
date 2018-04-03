@@ -23,8 +23,8 @@ public class MeanSquaredDisplacementInTime {
 
     public static void main(String[] args) {
         int time = 30;
-        int n = 100;
-        double dt2 = .02;
+        int n = 400;
+        double dt2 = .002;
 
         List<Double> timeList = IntStream.range(1, 11).boxed().map( i -> i*.09*time ).collect(Collectors.toList());
 
